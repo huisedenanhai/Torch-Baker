@@ -5,3 +5,4 @@ data/
 dist/
 torch_baker.egg-info/
 .DS_Store
+torchbaker/__pycache__/
