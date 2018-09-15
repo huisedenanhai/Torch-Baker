@@ -146,6 +146,19 @@ class CheckpointManager(object):
         return state_dict
 
 
+no_save_attr = 'BAKER_NO_SAVE'
+
+
+def no_save(module):
+    setattr(module, no_save_attr, True)
+
+
+def need_save(module):
+    if not hasattr(module, 'state_dict') or (hasattr(module, no_save_attr) and getattr(module, no_save_attr)):
+        return False
+    return True
+
+
 class Recipe(object):
     iter_num = 0  # the first iter is 0
     epoch_num = 0  # the first epoch is 0
@@ -190,8 +203,8 @@ class Recipe(object):
         state_dict = {
             self.__iter_num_key: self.iter_num,
             self.__epoch_num_key: self.epoch_num,
-            self.__modules_key: {k: v.state_dict() for k, v in self.modules.items() if hasattr(v, 'state_dict')},
-            self.__optimizers_key: {k: v.state_dict() for k, v in self.optimizers.items() if hasattr(v, 'state_dict')}
+            self.__modules_key: {k: v.state_dict() for k, v in self.modules.items() if need_save(v)},
+            self.__optimizers_key: {k: v.state_dict() for k, v in self.optimizers.items() if need_save(v)}
         }
         filename = self.name + datetime.datetime.now().strftime('-%b-%d-%I%M%S%f%p-%G') + \
                    '-iter-{}.pth'.format(self.iter_num)

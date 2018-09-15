@@ -229,6 +229,8 @@ def load(self):
 
 `load` will be called when Baker prepare the recipe if `recipe.need_resume` is set to `True`
 
+By default, all registered modules will be saved to the checkpoint file. Use `torchbaker.no_save(modules)` to mark a module as not being saved automatically.
+
 Some properties are offered to configure the save and load behaviour.
 
 | property of Recipe   | description                                                                                                                            | default value     |
